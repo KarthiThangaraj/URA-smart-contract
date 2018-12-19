@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1>Sample Transaction</h1>
+
+        <label for="name" class="col-lg-2 control-label">Receiver Address</label>
+        <input id="name" type="text">
+
+        <button id="button">Transfer</button>
+        <label>Account One balance</label>
+        <h3 id="account1"></h3>
+        <label>Account Two balance</label>
+        <h3 id="account2"></h3> 
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+       
+       if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+
+        var Contract = web3.eth.contract([
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_receiver",
+				"type": "address"
+			}
+		],
+		"name": "set",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	}
+]
+
+);
+
+    console.log('Contract', Contract);
+    var contractID = Contract.at('0x093a57302a4fa2fa89585713aa2d63f87e15d6be');
+    console.log(contractID);
+    $("#button").click(function() {
+        console.log($("#name").val());
+        
+        contractID.set(web3.eth.sendTransaction({
+            from: web3.eth.accounts[0], 
+            to: $("#name").val(), 
+            value: web3.toWei(1, 'ether')}
+            )
+            );
+    });
+   
+    var bal1 = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[0]));
+    var bal2 = web3.fromWei(web3.eth.getBalance(web3.eth.accounts[1]));
+    console.log(bal1.c[0]);
+    $("#account1").html(bal1.c[0]+' Ether');
+     $("#account2").html(bal2.c[0]+' Ether');
+    </script>
+
+</body>
+</html>
